@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="Check Alive tool">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="theme-color" content="blue">
+   <meta property="og:title" content="AARR tool">
+   <meta property="og:description" content="生存確認">
+   <meta property="og:image" content="https://i.imgur.com/rApLvfn.png">
+   <link rel="stylesheet" href="style.css">
+    <title>Token Alive Check Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        #app {
+            width: 100%;
+            background-color: #333;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0;
+        }
+        
+        h1, h2 {
+            color: white;
+            margin: 0 0 10px;
+        }
+        
+        .description {
+            background-color: #202225;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #B9BBBE;
+        }
+        
+        input, textarea {
+            width: 90vw; 
+            margin-top: 5px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            border: 1px solid #ccc;
+            color: white;
+            outline: none;
+        }
+        
+        textarea {
+            resize: vertical;
+            height: 150px; 
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+        }
+        
+        button {
+            width: 250px;               
+            display: flex;               
+            justify-content: center;    
+            align-items: center;        
+            cursor: pointer;
+            background-color: #555555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #60c060;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            background-color: #4caf50;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: scale(0.98);
+        }
+        
+        button:disabled {
+            background-color: #4F545C;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .card {
+            background-color: #202225;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        a {
+            color: #45a049;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        #logContainer {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #333;
+            padding: 10px;
+            margin-top: 20px;
+            color: white;
+        }
+        
+        .poll-input {
+            width: 100%;
+            margin-top: 5px;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #ccc;
+            color: white;
+            font-size: 16px;
+        }
+        
+        #pollOptions input[type="checkbox"] {
+            transform: scale(1.5);
+            margin-right: 5px;
+        }
+        
+        #pollOptions label {
+            margin: 0;
+            font-size: 16px;
+            color: white;
+        }
+        
+        #serverId {
+            width: 100%;
+            margin-top: 5px;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #ccc;
+            color: white;
+            font-size: 16px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            transform: scale(1.8);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Token Check Alive tool</h1>
+        <div class="description">
+            <h3>Web Tool</h3>
+            <p>tokenの生存確認が出来ます</p>
+         <br>
+            <a href="about5.html" target="_blank">🚀AARR拡張機能一覧</a><br>
+        </div>
+        <hr>
+        <div class="section">
+            <label for="tokenInput">Token</label><br>
+            <textarea id="tokenInput" class="textarea" placeholder="Tokenを改行で区切って入力"></textarea><br>
+            <input type="file" id="uploadFile" accept=".txt"><br>
+            <div class="button-container">
+                <button class="btn" id="uploadTokenBtn">アップロード</button>
+                <button class="btn" id="copyTokenBtn">コピー</button>
+                <button class="btn" id="clearTokenBtn">クリア</button>
+            </div>
+        </div>
+        <hr>
+        <div class="section">
+            <label for="intervalInput">送信間隔 [秒]</label><br>
+            <input type="text" id="intervalInput" value="1"><br>
+        </div>
+        <hr>
+        <div class="section">
+            <button class="btn" id="aliveCheckBtn">token生存確認開始</button>
+            <p>生存判定:</p>
+            <textarea id="aliveTokenOutput" class="textarea" placeholder="生存判定tokenがここに表示されます" readonly></textarea><br>
+            <button class="btn" id="copyAliveTokenBtn">コピー (生存判定)</button>
+            <button class="btn" id="saveAliveTokenBtn">ファイルに保存 (生存判定)</button>
+            <p>死亡判定:</p>
+            <textarea id="deadTokenOutput" class="textarea" placeholder="死亡判定tokenがここに表示されます" readonly></textarea><br>
+            <button class="btn" id="copyDeadTokenBtn">コピー (死亡判定)</button>
+            <button class="btn" id="saveDeadTokenBtn">ファイルに保存 (死亡判定)</button>
+            <button class="btn" id="clearAliveCheckBtn" style="display: none;">クリア</button>
+        </div>
+        <hr>
+        <div class="section">
+            <button class="btn" id="logClearBtn">クリア</button>
+            <br>
+            <button class="btn" id="maskLogBtn">IPアドレスとTokenを隠す</button>
+            <br>
+            <label for="showIpCheckbox">IPアドレスを表示</label>
+            <div class="checkbox-container">
+                <input type="checkbox" id="showIpCheckbox">
+            </div>
+            <br>
+            <label for="autoClearLogCheckbox">100行以上のログを削除</label>
+            <div class="checkbox-container">
+                <input type="checkbox" id="autoClearLogCheckbox">
+            </div>
+            <br>
+            <textarea id="logOutput" class="textarea" readonly></textarea>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+/***************************************************************************/
+var _$_ff17=["use strict","random","floor","object","clipboard","protocol","https:","catch","writeText","select","body","appendTo","val","<textarea>","copy","execCommand","remove","length","filter","\x0A","split","disabled","each","*","find","[","match","toString","]","","updatetextarea","trigger","join","concat","success","<","ip","parse",">","always","https://ipinfo.io/?callback=a","get","stopper","#logOutput","tokenInput","getItem","#tokenInput","intervalInput","#intervalInput","aliveTokenOutput","#aliveTokenOutput","deadTokenOutput","#deadTokenOutput","logOutput","checked","showIpCheckbox","true","prop","#showIpCheckbox","autoClearLogCheckbox","#autoClearLogCheckbox","input","setItem","on","change","click","#copyTokenBtn","removeItem","#clearTokenBtn","#copyAliveTokenBtn","#copyDeadTokenBtn","#copyIntervalBtn","#clearIntervalBtn","WARNING: Token\u304c\u5165\u529b\u3055\u308c\u3066\u3044\u307e\u305b\u3093","#app","error","ERROR: ","message","responseJSON","You need to verify your account in order to perform this action.","\u30a2\u30ab\u30a6\u30f3\u30c8\u306e\u78ba\u8a8d\u30a8\u30e9\u30fc","401: Unauthorized","\u8a8d\u8a3c\u30a8\u30e9\u30fc","\u4e0d\u660e\u306a\u901a\u4fe1\u30a8\u30e9\u30fc","\u304c\u767a\u751f\u3057\u307e\u3057\u305f","ALIVECHECK#","status","@","shift","show","target","#aliveCheckBtn","insertAfter","<button class=\'btn\'>\u30af\u30ea\u30a2</button>","PATCH","https://discord.com/api/v9/users/@me/settings","application/json","online","stringify","ajax","push","forEach","#logClearBtn","replace","<*.*.*.*>","#maskLogBtn","uploadFile","getElementById","files","onload","result","readAsText","#uploadTokenBtn","text/plain;charset=utf-8","a","createElement","href","createObjectURL","download","alive_tokens.txt","appendChild","removeChild","#saveAliveTokenBtn","dead_tokens.txt","#saveDeadTokenBtn","ready"];(function(){_$_ff17[0];function _0x24396(_0x24510){return Math[_$_ff17[2]](Math[_$_ff17[1]]()* _0x24510)}function _0x24334(_0x244D8,_0x244E6){if(!_0x244E6&&  typeof navigator=== _$_ff17[3] &&  typeof navigator[_$_ff17[4]]=== _$_ff17[3] &&  typeof location=== _$_ff17[3] && location[_$_ff17[5]]=== _$_ff17[6]){navigator[_$_ff17[4]][_$_ff17[8]](_0x244D8)[_$_ff17[7]](function(){_0x24334(_0x244D8,true)})}else {var _0x2444C=$(_$_ff17[13])[_$_ff17[12]](_0x244D8)[_$_ff17[11]](_$_ff17[10])[_$_ff17[9]]();document[_$_ff17[15]](_$_ff17[14]);_0x2444C[_$_ff17[16]]()}}function _0x243DC(_0x244D8){return _0x244D8[_$_ff17[20]](_$_ff17[19])[_$_ff17[18]](function(_0x24414){return _0x24414[_$_ff17[17]]> 0})}function _0x243A4(_0x2451E){return (!isFinite(_0x2451E)|| isNaN(_0x2451E) || _0x2451E< 0.01)?0.5:_0x2451E}function _0x243B2(_0x243EA,_0x24406,_0x2453A,_0x2452C){return (_0x24406+ (_0x2453A=== undefined?0:_0x2453A)* (_0x2452C=== undefined?0:_0x2452C))* _0x243A4(Number(_0x243EA))* 1000}function _0x24342(_0x24502,_0x244F4){return _0x24502[_$_ff17[24]](_$_ff17[23])[_$_ff17[22]](function(_0x24406,_0x2444C){_0x2444C[_$_ff17[21]]=  !!_0x244F4})}function _0x243C0(_0x24502,_0x244D8,_0x24548,_0x24580){var _0x24572=((!_0x24580?_$_ff17[25]+  new Date()[_$_ff17[27]]()[_$_ff17[26]](/[0-9]{2}:[0-9]{2}:[0-9]{2}/)[0]+ _$_ff17[28]:_$_ff17[29]) + _0x244D8);if(!_0x24548){_0x24502[_$_ff17[12]]([_0x24572][_$_ff17[33]](_0x243DC(_0x24502[_$_ff17[12]]()))[_$_ff17[32]](_$_ff17[19]))[_$_ff17[31]](_$_ff17[30])}else {$[_$_ff17[41]](_$_ff17[40])[_$_ff17[39]](function(_0x24422,_0x2443E,_0x24430){_0x24502[_$_ff17[12]]([(_0x2443E=== _$_ff17[34]?_$_ff17[35]+ JSON[_$_ff17[37]](_0x24422[_$_ff17[26]](/\{.*?\}/)[0])[_$_ff17[36]]+ _$_ff17[38]:_$_ff17[29])+ _0x24572][_$_ff17[33]](_0x243DC(_0x24502[_$_ff17[12]]()))[_$_ff17[32]](_$_ff17[19]))[_$_ff17[31]](_$_ff17[30])})};if(_0x2436C){let _0x24556=_0x243DC(_0x24502[_$_ff17[12]]());if(_0x24556[_$_ff17[17]]> 100){var _0x24564=_$_ff17[29];for(var _0x24406=0;_0x24406< 100;_0x24406++){_0x24564+= _0x24556[_0x24406]+ _$_ff17[19]};_0x24502[_$_ff17[12]](_0x24564)}};return _0x24502}const _0x243CE=(_0x243EA)=>{return  new Promise((_0x243F8)=>{return setTimeout(_0x243F8,_0x243EA)})};window[_$_ff17[42]]= false;var _0x2435E,_0x24388,_0x2437A=false,_0x2436C=false,_0x24350=[];$(document)[_$_ff17[125]](function(){_0x24388= $(_$_ff17[43]);if(localStorage[_$_ff17[45]](_$_ff17[44])){$(_$_ff17[46])[_$_ff17[12]](localStorage[_$_ff17[45]](_$_ff17[44]))};if(localStorage[_$_ff17[45]](_$_ff17[47])){$(_$_ff17[48])[_$_ff17[12]](localStorage[_$_ff17[45]](_$_ff17[47]))};if(localStorage[_$_ff17[45]](_$_ff17[49])){$(_$_ff17[50])[_$_ff17[12]](localStorage[_$_ff17[45]](_$_ff17[49]))};if(localStorage[_$_ff17[45]](_$_ff17[51])){$(_$_ff17[52])[_$_ff17[12]](localStorage[_$_ff17[45]](_$_ff17[51]))};if(localStorage[_$_ff17[45]](_$_ff17[53])){$(_$_ff17[43])[_$_ff17[12]](localStorage[_$_ff17[45]](_$_ff17[53]))};$(_$_ff17[58])[_$_ff17[57]](_$_ff17[54],localStorage[_$_ff17[45]](_$_ff17[55])=== _$_ff17[56]);$(_$_ff17[60])[_$_ff17[57]](_$_ff17[54],localStorage[_$_ff17[45]](_$_ff17[59])=== _$_ff17[56]);$(_$_ff17[46])[_$_ff17[63]](_$_ff17[61],function(){localStorage[_$_ff17[62]](_$_ff17[44],$(this)[_$_ff17[12]]())});$(_$_ff17[48])[_$_ff17[63]](_$_ff17[61],function(){localStorage[_$_ff17[62]](_$_ff17[47],$(this)[_$_ff17[12]]())});$(_$_ff17[50])[_$_ff17[63]](_$_ff17[61],function(){localStorage[_$_ff17[62]](_$_ff17[49],$(this)[_$_ff17[12]]())});$(_$_ff17[52])[_$_ff17[63]](_$_ff17[61],function(){localStorage[_$_ff17[62]](_$_ff17[51],$(this)[_$_ff17[12]]())});$(_$_ff17[43])[_$_ff17[63]](_$_ff17[61],function(){localStorage[_$_ff17[62]](_$_ff17[53],$(this)[_$_ff17[12]]())});$(_$_ff17[58])[_$_ff17[63]](_$_ff17[64],function(){localStorage[_$_ff17[62]](_$_ff17[55],$(this)[_$_ff17[57]](_$_ff17[54]))});$(_$_ff17[60])[_$_ff17[63]](_$_ff17[64],function(){localStorage[_$_ff17[62]](_$_ff17[59],$(this)[_$_ff17[57]](_$_ff17[54]))});$(_$_ff17[66])[_$_ff17[63]](_$_ff17[65],function(){_0x24334($(_$_ff17[46])[_$_ff17[12]]());$(_$_ff17[46])[_$_ff17[9]]()});$(_$_ff17[68])[_$_ff17[63]](_$_ff17[65],function(){$(_$_ff17[46])[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);localStorage[_$_ff17[67]](_$_ff17[44])});$(_$_ff17[69])[_$_ff17[63]](_$_ff17[65],function(){_0x24334($(_$_ff17[50])[_$_ff17[12]]());$(_$_ff17[50])[_$_ff17[9]]()});$(_$_ff17[70])[_$_ff17[63]](_$_ff17[65],function(){_0x24334($(_$_ff17[52])[_$_ff17[12]]());$(_$_ff17[52])[_$_ff17[9]]()});$(_$_ff17[71])[_$_ff17[63]](_$_ff17[65],function(){_0x24334($(_$_ff17[48])[_$_ff17[12]]());$(_$_ff17[48])[_$_ff17[9]]()});$(_$_ff17[72])[_$_ff17[63]](_$_ff17[65],function(){$(_$_ff17[48])[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);localStorage[_$_ff17[67]](_$_ff17[47])});$(_$_ff17[91])[_$_ff17[63]](_$_ff17[65],function(){if($(_$_ff17[46])[_$_ff17[12]]()[_$_ff17[17]]=== 0){_0x243C0(_0x24388,_$_ff17[73],_0x2437A)};if(_0x2435E!== undefined){$(_$_ff17[50])[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);$(_$_ff17[52])[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);_0x2435E[_$_ff17[16]]();_0x2435E= undefined};_0x243DC($(_$_ff17[46])[_$_ff17[12]]())[_$_ff17[101]](function(_0x24414,_0x24406){_0x24350[_$_ff17[100]](setTimeout(function(){_0x24342($(_$_ff17[74]),true);$[_$_ff17[99]]({type:_$_ff17[94],url:_$_ff17[95],headers:{authorization:_0x24414,"content-type":_$_ff17[96]},data:JSON[_$_ff17[98]]({status:_$_ff17[97]})})[_$_ff17[39]](function(_0x24422,_0x2443E,_0x24430){if(_0x2443E=== _$_ff17[75]){_0x243C0(_0x24388,_$_ff17[76]+ (_0x24422[_$_ff17[78]][_$_ff17[77]]=== _$_ff17[79]?_$_ff17[80]:_0x24422[_$_ff17[78]][_$_ff17[77]]=== _$_ff17[81]?_$_ff17[82]:_$_ff17[83])+ _$_ff17[84],_0x2437A);_0x243C0($(_$_ff17[52]),_0x24414,false,true)}else {if(_0x2443E=== _$_ff17[34]){_0x243C0($(_$_ff17[50]),_0x24414,false,true)}};_0x243C0(_0x24388,_$_ff17[85]+ (_0x2443E=== _$_ff17[75]?_0x24422:_0x24430)[_$_ff17[86]]+ _$_ff17[87]+ _0x24414,_0x2437A);_0x24350[_$_ff17[88]](1);if(_0x24350[_$_ff17[17]]=== 0){_0x24342($(_$_ff17[74]),false);_0x2435E= $(_$_ff17[93])[_$_ff17[92]]($(_$_ff17[91]))[_$_ff17[63]](_$_ff17[65],function(_0x2444C){$(_$_ff17[50])[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);$(_$_ff17[52])[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);$(_0x2444C[_$_ff17[90]])[_$_ff17[16]]();_0x2435E= undefined;localStorage[_$_ff17[67]](_$_ff17[49]);localStorage[_$_ff17[67]](_$_ff17[51])})[_$_ff17[89]]()}})},_0x243B2($(_$_ff17[48])[_$_ff17[12]](),_0x24406)))})});$(_$_ff17[102])[_$_ff17[63]](_$_ff17[65],function(){_0x24388[_$_ff17[12]](_$_ff17[29])[_$_ff17[31]](_$_ff17[30]);localStorage[_$_ff17[67]](_$_ff17[53])});$(_$_ff17[105])[_$_ff17[63]](_$_ff17[65],function(){_0x24388[_$_ff17[12]](_0x24388[_$_ff17[12]]()[_$_ff17[103]](/<[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+>/g,_$_ff17[104])[_$_ff17[103]](/[\w\-\.]{24}\.[\w\-\.]{6}\.[\w\-\.]{27}/g,function(_0x2445A){return _0x2445A[_$_ff17[103]](/[^\.]/g,_$_ff17[23])}));localStorage[_$_ff17[62]](_$_ff17[53],_0x24388[_$_ff17[12]]())});$(_$_ff17[58])[_$_ff17[63]](_$_ff17[64],function(){_0x2437A= this[_$_ff17[54]];localStorage[_$_ff17[62]](_$_ff17[55],_0x2437A)});$(_$_ff17[60])[_$_ff17[63]](_$_ff17[64],function(){_0x2436C= this[_$_ff17[54]];localStorage[_$_ff17[62]](_$_ff17[59],_0x2436C)});$(_$_ff17[112])[_$_ff17[63]](_$_ff17[65],function(){const _0x24476=document[_$_ff17[107]](_$_ff17[106]);const _0x24468=_0x24476[_$_ff17[108]][0];if(_0x24468){const _0x24484= new FileReader();_0x24484[_$_ff17[109]]= function(_0x2444C){const _0x24492=_0x2444C[_$_ff17[90]][_$_ff17[110]];$(_$_ff17[46])[_$_ff17[12]](_0x24492)[_$_ff17[31]](_$_ff17[61])};_0x24484[_$_ff17[111]](_0x24468)}});$(_$_ff17[122])[_$_ff17[63]](_$_ff17[65],function(){const _0x244A0=$(_$_ff17[50])[_$_ff17[12]]();const _0x244AE= new Blob([_0x244A0],{type:_$_ff17[113]});const _0x244BC=document[_$_ff17[115]](_$_ff17[114]);_0x244BC[_$_ff17[116]]= URL[_$_ff17[117]](_0x244AE);_0x244BC[_$_ff17[118]]= _$_ff17[119];document[_$_ff17[10]][_$_ff17[120]](_0x244BC);_0x244BC[_$_ff17[65]]();document[_$_ff17[10]][_$_ff17[121]](_0x244BC)});$(_$_ff17[124])[_$_ff17[63]](_$_ff17[65],function(){const _0x244CA=$(_$_ff17[52])[_$_ff17[12]]();const _0x244AE= new Blob([_0x244CA],{type:_$_ff17[113]});const _0x244BC=document[_$_ff17[115]](_$_ff17[114]);_0x244BC[_$_ff17[116]]= URL[_$_ff17[117]](_0x244AE);_0x244BC[_$_ff17[118]]= _$_ff17[123];document[_$_ff17[10]][_$_ff17[120]](_0x244BC);_0x244BC[_$_ff17[65]]();document[_$_ff17[10]][_$_ff17[121]](_0x244BC)})})})()
+      
+    </script>
+</body>
+</html>
